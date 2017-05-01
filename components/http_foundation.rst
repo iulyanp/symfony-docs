@@ -378,6 +378,13 @@ method takes an instance of
 You can clear a cookie via the
 :method:`Symfony\\Component\\HttpFoundation\\ResponseHeaderBag::clearCookie` method.
 
+Note you can create a
+:class:`Symfony\\Component\\HttpFoundation\\Cookie` object from a raw header
+value using :method:`Symfony\\Component\\HttpFoundation\\Cookie::fromString`.
+
+.. versionadded:: 3.3
+    The ``Cookie::fromString()`` method was introduced in Symfony 3.3.
+
 Managing the HTTP Cache
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -562,13 +569,23 @@ class, which can make this even easier::
 
     use Symfony\Component\HttpFoundation\JsonResponse;
 
-    $response = new JsonResponse();
-    $response->setData(array(
-        'data' => 123
-    ));
+    // if you know the data to send when creating the response
+    $response = new JsonResponse(array('data' => 123));
 
-This encodes your array of data to JSON and sets the ``Content-Type`` header
-to ``application/json``.
+    // if you don't know the data to send when creating the response
+    $response = new JsonResponse();
+    // ...
+    $response->setData(array('data' => 123));
+
+    // if the data to send is already encoded in JSON
+    $response = JsonResponse::fromJsonString('{ "data": 123 }');
+
+.. versionadded:: 3.2
+    The :method:`Symfony\\Component\\HttpFoundation\\JsonResponse::fromJsonString`
+    method was added in Symfony 3.2.
+
+The ``JsonResponse`` class sets the ``Content-Type`` header to
+``application/json`` and encodes your data to JSON when needed.
 
 .. caution::
 
