@@ -138,7 +138,7 @@ can automatically generate an empty ``test_project`` database for you:
 
         [mysqld]
         # Version 5.5.3 introduced "utf8mb4", which is recommended
-        collation-server     = utf8mb4_general_ci # Replaces utf8_general_ci
+        collation-server     = utf8mb4_unicode_ci # Replaces utf8_unicode_ci
         character-set-server = utf8mb4            # Replaces utf8
 
     You can also change the defaults for Doctrine so that the generated SQL
@@ -548,16 +548,18 @@ a controller, this is pretty easy. Add the following method to the
     // ...
     use AppBundle\Entity\Product;
     use Symfony\Component\HttpFoundation\Response;
+    use Doctrine\ORM\EntityManagerInterface;
+    use Doctrine\Common\Persistence\ManagerRegistry;
 
-    // ...
-    public function createAction()
+    public function createAction(EntityManagerInterface $em)
     {
+        // or fetch the em via the container
+        // $em = $this->get('doctrine')->getManager();
+
         $product = new Product();
         $product->setName('Keyboard');
         $product->setPrice(19.99);
         $product->setDescription('Ergonomic and stylish!');
-
-        $em = $this->getDoctrine()->getManager();
 
         // tells Doctrine you want to (eventually) save the Product (no queries yet)
         $em->persist($product);
@@ -568,33 +570,33 @@ a controller, this is pretty easy. Add the following method to the
         return new Response('Saved new product with id '.$product->getId());
     }
 
+    // if you have multiple entity managers, use the registry to fetch them
+    public function editAction(ManagerRegistry $doctrine)
+    {
+        $em = $doctrine->getManager();
+        $em2 = $doctrine->getManager('other_connection')
+    }
+
 .. note::
 
     If you're following along with this example, you'll need to create a
     route that points to this action to see it work.
 
-.. tip::
-
-    This article shows working with Doctrine from within a controller by using
-    the :method:`Symfony\\Bundle\\FrameworkBundle\\Controller\\Controller::getDoctrine`
-    method of the controller. This method is a shortcut to get the
-    ``doctrine`` service. You can work with Doctrine anywhere else
-    by injecting that service in the service. See
-    :doc:`/service_container` for more on creating your own services.
-
 Take a look at the previous example in more detail:
 
-* **lines 10-13** In this section, you instantiate and work with the ``$product``
+.. _doctrine-entity-manager:
+
+* **line 10** The ``EntityManagerInterface`` type-hint tells Symfony to pass you Doctrine's
+  *entity manager* object, which is the most important object in Doctrine. It's
+  responsible for saving objects to, and fetching objects from, the database.
+
+* **lines 15-18** In this section, you instantiate and work with the ``$product``
   object like any other normal PHP object.
 
-* **line 15** This line fetches Doctrine's *entity manager* object, which is
-  responsible for the process of persisting objects to, and fetching objects
-  from, the database.
-
-* **line 18** The ``persist($product)`` call tells Doctrine to "manage" the
+* **line 21** The ``persist($product)`` call tells Doctrine to "manage" the
   ``$product`` object. This does **not** cause a query to be made to the database.
 
-* **line 21** When the ``flush()`` method is called, Doctrine looks through
+* **line 24** When the ``flush()`` method is called, Doctrine looks through
   all of the objects that it's managing to see if they need to be persisted
   to the database. In this example, the ``$product`` object's data doesn't
   exist in the database, so the entity manager executes an ``INSERT`` query,
@@ -631,10 +633,11 @@ Fetching an object back out of the database is even easier. For example,
 suppose you've configured a route to display a specific ``Product`` based
 on its ``id`` value::
 
-    public function showAction($productId)
+    use Doctrine\ORM\EntityManagerInterface;
+
+    public function showAction($productId, EntityManagerInterface $em)
     {
-        $product = $this->getDoctrine()
-            ->getRepository('AppBundle:Product')
+        $product = $em->getRepository('AppBundle:Product')
             ->find($productId);
 
         if (!$product) {
@@ -657,8 +660,7 @@ as its "repository". You can think of a repository as a PHP class whose only
 job is to help you fetch entities of a certain class. You can access the
 repository object for an entity class via::
 
-    $repository = $this->getDoctrine()
-        ->getRepository('AppBundle:Product');
+    $repository = $em->getRepository('AppBundle:Product');
 
 .. note::
 
@@ -669,7 +671,7 @@ repository object for an entity class via::
 
 Once you have a repository object, you can access all sorts of helpful methods::
 
-    $repository = $this->getDoctrine()->getRepository('AppBundle:Product');
+    $repository = $em->getRepository('AppBundle:Product');
 
     // query for a single product by its primary key (usually "id")
     $product = $repository->find($productId);
@@ -692,7 +694,7 @@ Once you have a repository object, you can access all sorts of helpful methods::
 You can also take advantage of the useful ``findBy()`` and ``findOneBy()`` methods
 to easily fetch objects based on multiple conditions::
 
-    $repository = $this->getDoctrine()->getRepository('AppBundle:Product');
+    $repository = $em->getRepository('AppBundle:Product');
 
     // query for a single product matching the given name and price
     $product = $repository->findOneBy(
@@ -725,9 +727,10 @@ Updating an Object
 Once you've fetched an object from Doctrine, updating it is easy. Suppose
 you have a route that maps a product id to an update action in a controller::
 
-    public function updateAction($productId)
+    use Doctrine\ORM\EntityManagerInterface;
+
+    public function updateAction($productId, EntityManagerInterface $em)
     {
-        $em = $this->getDoctrine()->getManager();
         $product = $em->getRepository('AppBundle:Product')->find($productId);
 
         if (!$product) {
@@ -774,7 +777,7 @@ Querying for Objects
 You've already seen how the repository object allows you to run basic queries
 without any work::
 
-    $repository = $this->getDoctrine()->getRepository('AppBundle:Product');
+    $repository = $em->getRepository('AppBundle:Product');
 
     $product = $repository->find($productId);
     $product = $repository->findOneByName('Keyboard');
@@ -794,7 +797,6 @@ Imagine that you want to query for products that cost more than ``19.99``,
 ordered from least to most expensive. You can use DQL, Doctrine's native
 SQL-like language, to construct a query for this scenario::
 
-    $em = $this->getDoctrine()->getManager();
     $query = $em->createQuery(
         'SELECT p
         FROM AppBundle:Product p
@@ -834,8 +836,7 @@ Instead of writing a DQL string, you can use a helpful object called the
 depends on dynamic conditions, as your code soon becomes hard to read with
 DQL as you start to concatenate strings::
 
-    $repository = $this->getDoctrine()
-        ->getRepository('AppBundle:Product');
+    $repository = $em->getRepository('AppBundle:Product');
 
     // createQueryBuilder() automatically selects FROM AppBundle:Product
     // and aliases it to "p"

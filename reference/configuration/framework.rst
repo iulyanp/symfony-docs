@@ -22,7 +22,6 @@ Configuration
 
 * `secret`_
 * `http_method_override`_
-* `trusted_proxies`_
 * `ide`_
 * `test`_
 * `default_locale`_
@@ -109,6 +108,19 @@ Configuration
     * `log`_
     * `throw`_
 * :ref:`cache <reference-cache>`
+    * :ref:`app <reference-cache-app>`
+    * `system`_
+    * `directory`_
+    * `default_doctrine_provider`_
+    * `default_psr6_provider`_
+    * `default_redis_provider`_
+    * `pools`_
+        * :ref:`name <reference-cache-pools-name>`
+            * `adapter`_
+            * `public`_
+            * `default_lifetime`_
+            * `provider`_
+            * `clearer`_
     * `prefix_seed`_
 
 secret
@@ -121,8 +133,7 @@ used to add more entropy to security related operations. Its value should
 be a series of characters, numbers and symbols chosen randomly and the
 recommended length is around 32 characters.
 
-In practice, Symfony uses this value for generating the
-:doc:`CSRF tokens </form/csrf_protection>`, for encrypting the cookies used
+In practice, Symfony uses this value for encrypting the cookies used
 in the :doc:`remember me functionality </security/remember_me>` and for
 creating signed URIs when using :ref:`ESI (Edge Side Includes) <edge-side-includes>`.
 
@@ -176,38 +187,7 @@ named ``kernel.http_method_override``.
 trusted_proxies
 ~~~~~~~~~~~~~~~
 
-**type**: ``array``
-
-Configures the IP addresses that should be trusted as proxies. For more
-details, see :doc:`/request/load_balancer_reverse_proxy`.
-
-.. configuration-block::
-
-    .. code-block:: yaml
-
-        # app/config/config.yml
-        framework:
-            trusted_proxies:  [192.0.0.1, 10.0.0.0/8]
-
-    .. code-block:: xml
-
-        <!-- app/config/config.xml -->
-        <?xml version="1.0" encoding="UTF-8" ?>
-        <container xmlns="http://symfony.com/schema/dic/services"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xmlns:framework="http://symfony.com/schema/dic/symfony"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
-                http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
-
-            <framework:config trusted-proxies="192.0.0.1, 10.0.0.0/8" />
-        </container>
-
-    .. code-block:: php
-
-        // app/config/config.php
-        $container->loadFromExtension('framework', array(
-            'trusted_proxies' => array('192.0.0.1', '10.0.0.0/8'),
-        ));
+The ``trusted_proxies`` option was removed in Symfony 3.3. See :doc:`/request/load_balancer_reverse_proxy`.
 
 ide
 ~~~
@@ -244,7 +224,8 @@ doubling them to prevent Symfony from interpreting them as container parameters)
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:framework="http://symfony.com/schema/dic/symfony"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
 
             <framework:config ide="myide://open?url=file://%%f&line=%%l" />
@@ -304,6 +285,8 @@ setting should be present in your ``test`` environment (usually via
 
     For more information, see :doc:`/testing`.
 
+.. _config-framework-default_locale:
+
 default_locale
 ~~~~~~~~~~~~~~
 
@@ -358,7 +341,8 @@ respond and the user will receive a 400 response.
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:framework="http://symfony.com/schema/dic/symfony"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
 
             <framework:config>
@@ -473,7 +457,8 @@ You can also set ``esi`` to ``true`` to enable it:
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:framework="http://symfony.com/schema/dic/symfony"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
 
             <framework:config>
@@ -699,6 +684,8 @@ installation.
     You can see an example of the usage of this in
     :doc:`/doctrine/pdo_session_storage`.
 
+.. _name:
+
 name
 ....
 
@@ -806,7 +793,8 @@ setting the value to ``null``:
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:framework="http://symfony.com/schema/dic/symfony"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
 
             <framework:config>
@@ -852,7 +840,8 @@ This option allows you to define a base path to be used for assets:
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:framework="http://symfony.com/schema/dic/symfony"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
 
             <framework:config>
@@ -900,7 +889,8 @@ collection each time it generates an asset's path:
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:framework="http://symfony.com/schema/dic/symfony"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
 
             <framework:config>
@@ -944,7 +934,8 @@ You can group assets into packages, to specify different base URLs for them:
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:framework="http://symfony.com/schema/dic/symfony"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
 
             <framework:config>
@@ -1035,7 +1026,8 @@ Now, activate the ``version`` option:
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:framework="http://symfony.com/schema/dic/symfony"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
 
             <framework:config>
@@ -1247,7 +1239,8 @@ Assume you have custom global form themes in
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:framework="http://symfony.com/schema/dic/symfony"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/symfony http://symfony.com/schema/dic/symfony/symfony-1.0.xsd">
 
             <framework:config>
@@ -1599,6 +1592,129 @@ Throw PHP errors as ``\ErrorException`` instances. The parameter
 cache
 ~~~~~
 
+.. _reference-cache-app:
+
+app
+...
+
+**type**: ``string`` **default**: ``cache.adapter.filesystem``
+
+The cache adapter used by the ``cache.app`` service. The FrameworkBundle
+ships with multiple adapters: ``apcu``, ``doctrine``, ``system``, ``filesystem``,
+``psr6`` and ``redis``.
+
+.. tip::
+
+    It might be tough to understand at the beginning, so to avoid confusion remember that all pools perform the
+    same actions but on different medium given the adapter they are based on. Internally, a pool wraps the definition
+    of an adapter.
+
+system
+......
+
+**type**: ``string`` **default**: ``cache.adapter.system``
+
+The cache adapter used by the ``cache.system`` service.
+
+directory
+.........
+
+**type**: ``string`` **default**: ``%kernel.cache_dir%/pools``
+
+The path to the cache directory used by services inheriting from the
+``cache.adapter.filesystem`` adapter (including ``cache.app``).
+
+default_doctrine_provider
+.........................
+
+**type**: ``string``
+
+The service name to use as your default Doctrine provider. The provider is
+available as the ``cache.doctrine`` service.
+
+default_psr6_provider
+.....................
+
+**type**: ``string``
+
+The service name to use as your default PSR-6 provider. It is available as
+the ``cache.psr6`` service.
+
+default_redis_provider
+......................
+
+**type**: ``string`` **default**: ``redis://localhost``
+
+The DSN to use by the Redis provider. The provider is available as the ``cache.redis``
+service.
+
+pools
+.....
+
+**type**: ``array``
+
+A list of cache pools to be created by the framework extension.
+
+.. seealso::
+
+    For more information about how pools works, see :ref:`cache pools <component-cache-cache-pools>`.
+
+.. _reference-cache-pools-name:
+
+name
+""""
+
+**type**: ``prototype``
+
+Name of the pool you want to create.
+
+.. note::
+
+    Your pool name must differ from ``cache.app`` or ``cache.system``.
+
+adapter
+"""""""
+
+**type**: ``string`` **default**: ``cache.app``
+
+The name of the adapter to use. You could also use your own implementation.
+
+.. note::
+
+    Your service MUST implement the :class:`Psr\\Cache\\CacheItemPoolInterface` interface.
+
+public
+""""""
+
+**type**: ``boolean`` **default**: ``false``
+
+Whether your service should be public or not.
+
+default_lifetime
+""""""""""""""""
+
+**type**: ``integer``
+
+Default lifetime of your cache items in seconds.
+
+provider
+""""""""
+
+**type**: ``string``
+
+The service name to use as provider when the specified adapter needs one.
+
+clearer
+"""""""
+
+**type**: ``string``
+
+The cache clearer used to clear your PSR-6 cache.
+
+.. seealso::
+
+    For more information, see :class:`Symfony\\Component\\HttpKernel\\CacheClearer\\Psr6CacheClearer`.
+
 prefix_seed
 ...........
 
@@ -1760,6 +1876,23 @@ Full Default Configuration
             php_errors:
                 log:                  false
                 throw:                '%kernel.debug%'
+
+            # cache configuration
+            cache:
+                app: cache.app
+                system: cache.system
+                directory: '%kernel.cache_dir%/pools'
+                default_doctrine_provider: ~
+                default_psr6_provider: ~
+                default_redis_provider: 'redis://localhost'
+                pools:
+                    # Prototype
+                    name:
+                        adapter: cache.app
+                        public: false
+                        default_lifetime: ~
+                        provider: ~
+                        clearer: ~
 
 .. _`HTTP Host header attacks`: http://www.skeletonscribe.net/2013/05/practical-http-host-header-attacks.html
 .. _`Security Advisory Blog post`: https://symfony.com/blog/security-releases-symfony-2-0-24-2-1-12-2-2-5-and-2-3-3-released#cve-2013-4752-request-gethost-poisoning

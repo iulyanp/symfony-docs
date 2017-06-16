@@ -25,6 +25,7 @@ like :ref:`logging out <security-logging-out>` and
 :doc:`encoding user passwords </security/password_encoding>`.
 
 .. _security-firewalls:
+.. _firewalls-authentication:
 
 1) Initial security.yml Setup (Authentication)
 ----------------------------------------------
@@ -47,7 +48,7 @@ configuration looks like this:
                     pattern: ^/(_(profiler|wdt)|css|images|js)/
                     security: false
 
-                default:
+                main:
                     anonymous: ~
 
     .. code-block:: xml
@@ -69,7 +70,7 @@ configuration looks like this:
                     pattern="^/(_(profiler|wdt)|css|images|js)/"
                     security="false" />
 
-                <firewall name="default">
+                <firewall name="main">
                     <anonymous />
                 </firewall>
             </config>
@@ -89,7 +90,7 @@ configuration looks like this:
                     'pattern'   => '^/(_(profiler|wdt)|css|images|js)/',
                     'security'  => false,
                 ),
-                'default' => array(
+                'main' => array(
                     'anonymous' => null,
                 ),
             ),
@@ -105,7 +106,7 @@ by your security.
     You can also match a request against other details of the request (e.g. host). For more
     information and examples read :doc:`/security/firewall_restriction`.
 
-All other URLs will be handled by the ``default`` firewall (no ``pattern``
+All other URLs will be handled by the ``main`` firewall (no ``pattern``
 key means it matches *all* URLs). You can think of the firewall like your
 security system, and so it usually makes sense to have just one main firewall.
 But this does *not* mean that every URL requires authentication - the ``anonymous``
@@ -143,7 +144,7 @@ To activate this, add the ``http_basic`` key under your firewall:
 
             firewalls:
                 # ...
-                default:
+                main:
                     anonymous: ~
                     http_basic: ~
 
@@ -160,7 +161,7 @@ To activate this, add the ``http_basic`` key under your firewall:
             <config>
                 <!-- ... -->
 
-                <firewall name="default">
+                <firewall name="main">
                     <anonymous />
                     <http-basic />
                 </firewall>
@@ -174,7 +175,7 @@ To activate this, add the ``http_basic`` key under your firewall:
             // ...
             'firewalls' => array(
                 // ...
-                'default' => array(
+                'main' => array(
                     'anonymous'  => null,
                     'http_basic' => null,
                 ),
@@ -215,7 +216,7 @@ user to be logged in to access this URL:
             # ...
             firewalls:
                 # ...
-                default:
+                main:
                     # ...
 
             access_control:
@@ -235,7 +236,7 @@ user to be logged in to access this URL:
             <config>
                 <!-- ... -->
 
-                <firewall name="default">
+                <firewall name="main">
                     <!-- ... -->
                 </firewall>
 
@@ -251,7 +252,7 @@ user to be logged in to access this URL:
             // ...
             'firewalls' => array(
                 // ...
-                'default' => array(
+                'main' => array(
                     // ...
                 ),
             ),
@@ -450,6 +451,7 @@ If you'd like to load your users via the Doctrine ORM, that's easy! See
 :doc:`/security/entity_provider` for all the details.
 
 .. _security-encoding-user-password:
+.. _encoding-the-user-s-password:
 
 C) Encoding the User's Password
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -703,7 +705,7 @@ URL pattern. You saw this earlier, where anything matching the regular expressio
 
             firewalls:
                 # ...
-                default:
+                main:
                     # ...
 
             access_control:
@@ -723,7 +725,7 @@ URL pattern. You saw this earlier, where anything matching the regular expressio
             <config>
                 <!-- ... -->
 
-                <firewall name="default">
+                <firewall name="main">
                     <!-- ... -->
                 </firewall>
 
@@ -740,7 +742,7 @@ URL pattern. You saw this earlier, where anything matching the regular expressio
 
             'firewalls' => array(
                 // ...
-                'default' => array(
+                'main' => array(
                     // ...
                 ),
             ),
@@ -1287,7 +1289,6 @@ Authentication (Identifying/Logging in the User)
     security/api_key_authentication
     security/custom_authentication_provider
     security/pre_authenticated
-    security/target_path
     security/csrf_in_login_form
     security/named_encoders
     security/multiple_user_providers

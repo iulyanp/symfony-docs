@@ -45,7 +45,8 @@ already included:
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:swiftmailer="http://symfony.com/schema/dic/swiftmailer"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/swiftmailer http://symfony.com/schema/dic/swiftmailer/swiftmailer-1.0.xsd">
 
             <swiftmailer:config
@@ -100,10 +101,9 @@ The Swift Mailer library works by creating, configuring and then sending
 of the message and is accessible via the ``mailer`` service. Overall, sending
 an email is pretty straightforward::
 
-    public function indexAction($name)
+    public function indexAction($name, \Swift_Mailer $mailer)
     {
-        $message = \Swift_Message::newInstance()
-            ->setSubject('Hello Email')
+        $message = new \Swift_Message('Hello Email')
             ->setFrom('send@example.com')
             ->setTo('recipient@example.com')
             ->setBody(
@@ -125,7 +125,11 @@ an email is pretty straightforward::
             )
             */
         ;
-        $this->get('mailer')->send($message);
+
+        $mailer->send($message);
+
+        // or, you can also fetch the mailer service this way
+        // $this->get('mailer')->send($message);
 
         return $this->render(...);
     }

@@ -190,17 +190,18 @@ Use Case
 
 If you have this kind of time-related tests::
 
+    use PHPUnit\Framework\TestCase;
     use Symfony\Component\Stopwatch\Stopwatch;
 
-    class MyTest extends \PHPUnit_Framework_TestCase
+    class MyTest extends TestCase
     {
         public function testSomething()
         {
             $stopwatch = new Stopwatch();
 
-            $stopwatch->start();
+            $stopwatch->start('event_name');
             sleep(10);
-            $duration = $stopwatch->stop();
+            $duration = $stopwatch->stop('event_name')->getDuration();
 
             $this->assertEquals(10, $duration);
         }
@@ -208,7 +209,7 @@ If you have this kind of time-related tests::
 
 You used the :doc:`Symfony Stopwatch Component </components/stopwatch>` to
 calculate the duration time of your process, here 10 seconds. However, depending
-on the load of the server your the processes running on your local machine, the
+on the load of the server or the processes running on your local machine, the
 ``$duration`` could for example be `10.000023s` instead of `10s`.
 
 This kind of tests are called transient tests: they are failing randomly
@@ -245,12 +246,13 @@ following listener in your PHPUnit configuration:
 As a result, the following is guaranteed to work and is no longer a transient
 test::
 
+    use PHPUnit\Framework\TestCase;
     use Symfony\Component\Stopwatch\Stopwatch;
 
     /**
      * @group time-sensitive
      */
-    class MyTest extends \PHPUnit_Framework_TestCase
+    class MyTest extends TestCase
     {
         public function testSomething()
         {
@@ -297,9 +299,10 @@ Use Case
 Consider the following example that uses the ``checkMX`` option of the ``Email``
 constraint to test the validity of the email domain::
 
+    use PHPUnit\Framework\TestCase;
     use Symfony\Component\Validator\Constraints\Email;
 
-    class MyTest extends \PHPUnit_Framework_TestCase
+    class MyTest extends TestCase
     {
         public function testEmail()
         {
@@ -315,12 +318,13 @@ In order to avoid making a real network connection, add the ``@dns-sensitive``
 annotation to the class and use the ``DnsMock::withMockedHosts()`` to configure
 the data you expect to get for the given hosts::
 
+    use PHPUnit\Framework\TestCase;
     use Symfony\Component\Validator\Constraints\Email;
 
     /**
      * @group dns-sensitive
      */
-    class MyTest extends \PHPUnit_Framework_TestCase
+    class MyTest extends TestCase
     {
         public function testEmails()
         {
@@ -390,7 +394,7 @@ Modified PHPUnit script
 -----------------------
 
 .. versionadded:: 3.2
-    The modified PHPUnit script script was introduced in the 3.2 version of 
+    This modified PHPUnit script was introduced in the 3.2 version of 
     this component.
 
 This bridge provides a modified version of PHPUnit that you can call by using
@@ -423,8 +427,8 @@ If you have installed the bridge through Composer, you can run it by calling e.g
 
 .. tip::
 
-    Set the ``SYMFONY_PHPUNIT_REMOVE`` env var to ``symfony/yaml`` if you need
-    ``prophecy`` but not ``symfony/yaml``.
+    If you still need to use ``prophecy`` (but not ``symfony/yaml``), 
+    then set the ``SYMFONY_PHPUNIT_REMOVE`` env var to ``symfony/yaml``.
 
 .. _PHPUnit: https://phpunit.de
 .. _`PHPUnit event listener`: https://phpunit.de/manual/current/en/extending-phpunit.html#extending-phpunit.PHPUnit_Framework_TestListener

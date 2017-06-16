@@ -224,9 +224,9 @@ more advanced use-case, you can always do the same security check in PHP:
     /**
      * @Route("/{id}/edit", name="admin_post_edit")
      */
-    public function editAction($id)
+    public function editAction($id, EntityManagerInterface $em)
     {
-        $post = $this->getDoctrine()->getRepository('AppBundle:Post')
+        $post = $em->getRepository('AppBundle:Post')
             ->find($id);
 
         if (!$post) {
@@ -328,19 +328,10 @@ the same ``getAuthorEmail()`` logic you used above:
         }
     }
 
-To enable the security voter in the application, define a new service:
-
-.. code-block:: yaml
-
-    # app/config/services.yml
-    services:
-        # ...
-        app.post_voter:
-            class:      AppBundle\Security\PostVoter
-            arguments: ['@security.access.decision_manager']
-            public:     false
-            tags:
-               - { name: security.voter }
+If you're using the :ref:`default services.yml configuration <service-container-services-load-example>`,
+your application will :ref:`autoconfigure <services-autoconfigure>` your security
+voter and inject an ``AccessDecisionManagerInterface`` instance into it thanks to
+:doc:`autowiring </service_container/autowiring>`.
 
 Now, you can use the voter with the ``@Security`` annotation:
 

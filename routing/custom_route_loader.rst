@@ -145,20 +145,23 @@ Now define a service for the ``ExtraLoader``:
 
         # app/config/services.yml
         services:
-            app.routing_loader:
-                class: AppBundle\Routing\ExtraLoader
-                tags:
-                    - { name: routing.loader }
+            # ...
+
+            AppBundle\Routing\ExtraLoader:
+                tags: [routing.loader]
 
     .. code-block:: xml
 
         <?xml version="1.0" ?>
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd">
 
             <services>
-                <service id="app.routing_loader" class="AppBundle\Routing\ExtraLoader">
+                <!-- ... -->
+
+                <service id="AppBundle\Routing\ExtraLoader">
                     <tag name="routing.loader" />
                 </service>
             </services>
@@ -169,7 +172,7 @@ Now define a service for the ``ExtraLoader``:
         use AppBundle\Routing\ExtraLoader;
 
         $container
-            ->register('app.routing_loader', ExtraLoader::class)
+            ->autowire(ExtraLoader::class)
             ->addTag('routing.loader')
         ;
 
@@ -198,7 +201,8 @@ What remains to do is adding a few lines to the routing configuration:
         <?xml version="1.0" encoding="UTF-8" ?>
         <routes xmlns="http://symfony.com/schema/routing"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
+            xsi:schemaLocation="http://symfony.com/schema/routing
+                http://symfony.com/schema/routing/routing-1.0.xsd">
 
             <import resource="." type="extra" />
         </routes>

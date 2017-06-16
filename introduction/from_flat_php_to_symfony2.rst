@@ -370,7 +370,7 @@ on the requested URI::
         echo '<html><body><h1>Page Not Found</h1></body></html>';
     }
 
-For organization, both controllers (formerly ``index.php`` and ``show.php``)
+For organization, both controllers (formerly ``/index.php`` and ``/index.php/show``)
 are now PHP functions and each has been moved into a separate file named ``controllers.php``::
 
     // controllers.php
@@ -545,23 +545,22 @@ them for you. Here's the same sample application, now built in Symfony::
     namespace AppBundle\Controller;
 
     use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+    use Doctrine\ORM\EntityManagerInterface;
 
     class BlogController extends Controller
     {
-        public function listAction()
+        public function listAction(EntityManagerInterface $em)
         {
-            $posts = $this->get('doctrine')
-                ->getManager()
+            $posts = $em
                 ->createQuery('SELECT p FROM AppBundle:Post p')
                 ->execute();
 
             return $this->render('Blog/list.html.php', array('posts' => $posts));
         }
 
-        public function showAction($id)
+        public function showAction(EntityManagerInterface $em)
         {
-            $post = $this->get('doctrine')
-                ->getManager()
+            $post = $em
                 ->getRepository('AppBundle:Post')
                 ->find($id);
 

@@ -126,12 +126,12 @@ set for the package and the URL path. More information in
 :ref:`templating-assets`. For asset versioning, see
 :ref:`reference-framework-assets-version`.
 
-assets_version
+asset_version
 ~~~~~~~~~~~~~~
 
 .. code-block:: twig
 
-    {{ assets_version(packageName = null) }}
+    {{ asset_version(packageName = null) }}
 
 ``packageName`` *(optional)*
     **type**: ``string`` | ``null`` **default**: ``null``
@@ -731,11 +731,14 @@ needed objects and values. It is an instance of
 
 The available attributes are:
 
-* ``app.user``
-* ``app.request``
-* ``app.session``
-* ``app.environment``
-* ``app.debug``
+* ``app.user``, a PHP object representing the current user;
+* ``app.request``, a :class:``Symfony\\Component\\HttpFoundation\\Request`` object;
+* ``app.session``, a :class:``Symfony\\Component\\HttpFoundation\\Session\\Session`` object;
+* ``app.environment``, a string with the name of the execution environment;
+* ``app.debug``, a boolean telling whether the debug mode is enabled in the app;
+* ``app.token``, a :class:`Symfony\\Component\\Security\\Core\\Authentication\\Token\\TokenInterface`
+  object representing the security token
+* ``app.flashes``, returns flash messages from the session
 
 .. _`Twig Reference`: http://twig.sensiolabs.org/documentation#reference
 .. _`Twig Extensions repository`: https://github.com/twigphp/Twig-extensions

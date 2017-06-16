@@ -46,9 +46,6 @@ url
 
 **type**: ``string``
 
-.. versionadded:: 2.4.2
-    The ``url`` option was added in SwiftMailerBundle 2.4.2.
-
 The entire SwiftMailer configuration using a DSN-like URL format.
 
 Example: ``smtp://user:pass@host:port/?timeout=60&encryption=ssl&auth_mode=login&...``
@@ -100,18 +97,12 @@ timeout
 
 **type**: ``integer``
 
-.. versionadded:: 2.4.2
-    The ``timeout`` option was added in SwiftMailerBundle 2.4.2.
-
 The timeout in seconds when using ``smtp`` as the transport.
 
 source_ip
 ~~~~~~~~~
 
 **type**: ``string``
-
-.. versionadded:: 2.4.2
-    The ``source_ip`` option was added in SwiftMailerBundle 2.4.2.
 
 The source IP address when using ``smtp`` as the transport.
 
@@ -120,8 +111,8 @@ local_domain
 
 **type**: ``string``
 
-.. versionadded:: 2.4.2
-    The ``local_domain`` option was added in SwiftMailerBundle 2.4.2.
+.. versionadded:: 2.4.0
+    The ``local_domain`` option was introduced in SwiftMailerBundle 2.4.0.
 
 The domain name to use in ``HELO`` command.
 
@@ -241,7 +232,8 @@ the information will be available in the profiler.
 
     The following options can be set via environment variables using the
     ``%env()%`` syntax: ``url``, ``transport``, ``username``, ``password``,
-    ``host``, ``port``, ``timeout``, ``source_ip``, ``local_domain``.
+    ``host``, ``port``, ``timeout``, ``source_ip``, ``local_domain``,
+    ``encryption``, ``auth_mode``.
     For details, see the :doc:`/configuration/external_parameters` article.
 
 Full Default Configuration
@@ -276,7 +268,8 @@ Full Default Configuration
         <container xmlns="http://symfony.com/schema/dic/services"
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             xmlns:swiftmailer="http://symfony.com/schema/dic/swiftmailer"
-            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd
+            xsi:schemaLocation="http://symfony.com/schema/dic/services
+                http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/swiftmailer http://symfony.com/schema/dic/swiftmailer/swiftmailer-1.0.xsd">
 
             <swiftmailer:config
@@ -328,8 +321,8 @@ key (the default mailer is identified by the ``default_mailer`` option):
             xsi:schemaLocation="http://symfony.com/schema/dic/services
                 http://symfony.com/schema/dic/services/services-1.0.xsd
                 http://symfony.com/schema/dic/swiftmailer
-                http://symfony.com/schema/dic/swiftmailer/swiftmailer-1.0.xsd"
-        >
+                http://symfony.com/schema/dic/swiftmailer/swiftmailer-1.0.xsd">
+
             <swiftmailer:config default-mailer="second_mailer">
                 <swiftmailer:mailer name="first_mailer"/>
                 <swiftmailer:mailer name="second_mailer"/>
